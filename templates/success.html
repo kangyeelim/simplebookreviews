@@ -1,0 +1,11 @@
+{% extends "layout1.html" %}
+	{% block body %}
+		<h2 class="login-heading mb-4">Sign up successful.</h2> 
+		<h4 class="login-heading mb-4">Thank you for signing up with Simple Book Reviews! Go ahead and log-in to enjoy what
+		we have to offer.</h4>
+		<div>
+			<form action="{{ url_for('index') }}">
+				<button class="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2" type="submit">Go to Log-in page.</button>
+			</form>
+		</div>
+	{% endblock %}

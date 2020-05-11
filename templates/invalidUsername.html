@@ -1,0 +1,16 @@
+{% extends "layout1.html" %}
+	{% block body %}
+		<h3 class="login-heading mb-4">Sign up to enjoy Simple Book Reviews!</h3>
+		<form action="{{ url_for('signup') }}" method="post">
+            <div class="form-group">
+				<input type="text" name="inputUsername" class="form-control is-invalid" value="{{ username }}" required autofocus>
+				<div class="invalid-feedback">
+					The username has been used.
+				</div>
+            </div>
+			<div class="form-group">
+				<input type="password" name="inputPassword" class="form-control" value="{{ password }}" required>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2" type="submit">Submit.</button>
+        </form>
+	{% endblock %}
