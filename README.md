@@ -40,6 +40,7 @@ Feel free to add your own improvements!
 | public | reviews_id_seq | sequence |  |
 | public | users          | table    |  |
 | public | users_id_seq   | sequence |  |
+
 (6 rows)
 
                                 Table "public.books"
@@ -50,6 +51,7 @@ Feel free to add your own improvements!
 | title | character varying |           | not null |								   |
 | author| character varying |           | not null |								   |
 | year  | character varying |           | not null |								   |
+
 Indexes:
     "books_pkey" PRIMARY KEY, btree (id)
 	
@@ -62,6 +64,7 @@ Indexes:
 | user_id  | integer           |           | not null ||
 | rating   | character varying |           | not null ||
 | book_id  | integer           |           | not null ||
+
 Indexes:
     "reviews_pkey" PRIMARY KEY, btree (id)
 	
@@ -71,5 +74,6 @@ Indexes:
 | id       | integer           |           | not null | nextval('users_id_seq'::regclass)|
 | username | character varying |           | not null ||
 | password | character varying |           | not null ||
+
 Indexes:
     "users_pkey" PRIMARY KEY, btree (id)	
