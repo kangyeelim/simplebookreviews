@@ -1,0 +1,10 @@
+{% extends "layout1.html" %}
+	{% block body %}
+		<h2 class="login-heading mb-4">Changed successfully.</h2> 
+		<h4 class="login-heading mb-4">Please log-in again.</h4>
+		<div>
+			<form action="{{ url_for('index') }}">
+				<button class="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2" type="submit">Go to Log-in page.</button>
+			</form>
+		</div>
+	{% endblock %}

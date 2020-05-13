@@ -1,0 +1,96 @@
+{% extends 'layout2.html' %}
+{% block title %}
+	<li class="nav-item">
+		<a class="nav-link" href="{{ url_for('home', id=user_id) }}">Home</a>
+	</li>
+	<li class="nav-item active">
+		<a class="nav-link" href="{{ url_for('allbooks', id=user_id) }}">All Books
+			<span class="sr-only">(current)</span>
+		</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" href="{{ url_for('contact', id=user_id) }}">Contact</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" href="{{ url_for('account', id=user_id) }}">Account</a>
+	</li>
+{% endblock %}
+{% block heading %}
+	<h1 class="font-weight-light" style="color:white">{{ book.title }}</h1>
+	<p class="lead" style="color:white">by {{ book.author }}</p>
+{% endblock %}
+{% block body %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+		  <div class="alert alert-warning alert-dismissible" role="alert">
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+			{{messages[0]}}
+		  </div>
+	{% endif %}
+{% endwith %}
+<div class="container">
+	<div class="card border-0 shadow my-5">
+    <div class="card-body">
+	<h3 class="font-weight-light" style="text-align:center">Book Information</h3>
+	<div class="row">
+		<div class="col-sm-4">
+			<img src="http://covers.openlibrary.org/b/isbn/{{ book.isbn }}-M.jpg"/>
+		</div>
+		<div class="col-sm-8" style="margin-top:30px">
+			<h5 class="font-weight-light">ISBN: {{ book.isbn }}</h5>
+			<h5 class="font-weight-light">Year: {{ book.year }}</h5>
+	
+			<h5 class="font-weight-light">Average Rating from GoodReads: {{ ave_rating }} out of 5</h5>
+		
+			<h5 class="font-weight-light">Rated by {{ ratings_count }} readers</h5>
+	
+			<h5 class="font-weight-light">Total Number of Reviews from GoodReads:{{ reviews_count }}</h5>
+		</div>
+		</div>
+	</div>
+	</div>
+</div>
+	<div class="container">
+	
+	<div class="card border-0 shadow my-5">
+    <div class="card-body">
+	<h3 class="font-weight-light" style="text-align:center">Write my Review</h3>
+	<form action="{{ url_for('submitreview', book_id= book.id, user_id=user_id) }}" method="post">
+		<div class="form-group">
+			<h5 class="font-weight-light">Review</h5>
+			<textarea class="form-control" name="inputReview" rows="4"></textarea>
+		</div>
+		<div class="form-group">
+			<h5 class="font-weight-light">Rating out of 5:</h5>
+			<select class="form-control" name="rating">
+				<option>1</option>
+				
+				<option>2</option>
+				
+				<option>3</option>
+				
+				<option>4</option>
+				
+				<option>5</option>
+			</select>
+		</div>
+		<button class="btn btn-lg btn-secondary btn-block btn-login text-uppercase mb-2" type="submit">Submit.</button>
+	</form>
+	</div>
+	</div>
+	</div>
+	<div style="height:80px"></div>
+	<div class="container">
+	<h3 class="font-weight-light" style="text-align:center">Reviews and Ratings from Simple Book Reviews</h3>
+	{% for review in reviews %}
+		<div class="card border-0 shadow my-5">
+			<div class="card-body">
+				<h4 class="font-weight-light">Rating: {{ review.rating }} out of 5</h4>
+				<h4 class="font-weight-light">Review: {{ review.review }}</h4>
+				<p class="font-weight-light">By: {{ review.username }}</p>
+			</div>
+		</div>
+	{% endfor %}
+	</div>
+	
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'layout2.html' %}
+{% block title %}
+	<li class="nav-item">
+		<a class="nav-link" href="{{ url_for('home', id=user.id) }}">Home</a>
+	</li>
+	<li class="nav-item active">
+		<a class="nav-link" href="{{ url_for('allbooks', id=user.id) }}">All Books
+			<span class="sr-only">(current)</span>
+		</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" href="{{ url_for('contact', id=user.id) }}">Contact</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" href="{{ url_for('account', id=user.id) }}">Account</a>
+	</li>
+{% endblock %}
+
+{% block heading %}
+	<h1 class="font-weight-light" style="color:white">Welcome to the library</h1>
+	<p class="lead" style="color:white">Search for any book to take a look at ratings and reviews or to give a review</p>
+{% endblock %}
+
+{% block body %}
+	<div class="row">
+		<div class= "col">
+			<h2 class="font-weight-light">Books</h2>
+		</div>
+		<div class="col">
+			<form class="form-inline my-2 my-lg-0" action="{{ url_for('search', id=user.id) }}" method="post">
+				<input class="form-control mr-sm-2" style="width:300px" name="input" type="search" placeholder="Search" aria-label="Search">
+				<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+			</form>
+		</div>
+	</div>
+	<div style="height:20px"></div>
+	<ul>{% for book in books %}
+	{% if book.id != 1: %}
+		<li>
+			<a href="{{ url_for('book', book_id=book.id, user_id=user.id) }}">
+				<p>{{ book.title }} by {{ book.author }}</p>
+			</a>
+		</li>
+		{% endif %}
+		{% endfor %}
+    </ul>
+{% endblock %}

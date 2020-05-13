@@ -1,0 +1,49 @@
+{% extends "layout3.html" %}
+
+{% block heading %}
+	<li class="nav-item">
+		<a class="nav-link" href="{{ url_for('home', id=user.id) }}">Home</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" href="{{ url_for('allbooks', id=user.id) }}">All Books</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" href="{{ url_for('contact', id=user.id) }}">Contact</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" href="{{ url_for('account', id=user.id) }}">Account</a>
+	</li>
+{% endblock %}
+
+{% block body %}
+<div style="height:80px"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+        <div class="card card-signin my-5">
+          <div class="card-body">
+            <h4 class="card-title text-center">Account settings</h4>
+			  
+			  <form class="form" action="{{ url_for('updateusername', id=user.id) }}" method="post">
+              <button class="btn btn-lg btn-primary btn-block" type="submit">Change username</button>
+			  </form>
+			  <div style="height:20px"></div>
+			  <form class="form" action="{{ url_for('updatepassword', id=user.id) }}" method="post">
+              <button class="btn btn-lg btn-primary btn-block" type="submit">Change password</button>
+			  </form>
+			  <div style="height:20px"></div>
+
+			  <form class="form" action="#" method="post">
+              <button class="btn btn-lg btn-primary btn-block" type="submit">Update email</button>
+			  </form>
+			  <hr class="my-4">
+			  <form class="form" action="{{ url_for('signout') }}" method="post">
+				<button class="btn btn-lg btn-primary btn-block" type="submit">Log out</button>
+			  </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

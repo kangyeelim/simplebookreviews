@@ -1,0 +1,43 @@
+{% extends "layout3.html" %}
+
+{% block heading %}
+	<li class="nav-item">
+		<a class="nav-link" href="{{ url_for('home', id=user.id) }}">Home</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" href="{{ url_for('allbooks', id=user.id) }}">All Books</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" href="{{ url_for('contact', id=user.id) }}">Contact</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" href="{{ url_for('account', id=user.id) }}">Account</a>
+	</li>
+{% endblock %}
+
+{% block body %}
+<div style="height:80px"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+        <div class="card card-signin my-5">
+          <div class="card-body">
+            <h4 class="card-title text-center">Account settings</h4>
+              <form class="form-signin" action="{{ url_for('changeusername', id=user.id) }}" method="post">
+				<div class="form-group">
+					<h6 class="card-text">Current username: {{ user.username }}</h6> 
+					<div style="height:10px"></div>
+
+					<input type="text" name="newUsername" class="form-control" placeholder="New Username" required autofocus>
+					<div style="height:20px"></div>
+					<input type="password" name="inputPassword" class="form-control" placeholder="Password" required autofocus>
+					<div style="height:20px"></div>
+					<button class="btn btn-lg btn-primary btn-block btn-login" type="submit">Confirm.</button>
+				</div>  
+			</form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

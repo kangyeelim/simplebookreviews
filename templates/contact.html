@@ -1,0 +1,42 @@
+{% extends 'layout2.html' %}
+{% block title %}
+	<li class="nav-item">
+		<a class="nav-link" href="{{ url_for('home', id=id) }}">Home</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" href="{{ url_for('allbooks', id=id) }}">All Books</a>
+	</li>
+	<li class="nav-item active">
+		<a class="nav-link" href="#">Contact
+			<span class="sr-only">(current)</span>
+		</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" href="{{ url_for('account', id=id) }}">Account</a>
+	</li>
+{% endblock %}
+{% block heading %}
+	<h1 class="font-weight-light" style="color:white">Contact creator</h1>
+	<p class="lead" style="color:white">Do contact the creator with any concerns and suggestions.</p>
+{% endblock %}
+{% block body %}
+<div class="container">
+	<div class="card border-0 shadow my-5">
+    <div class="card-body">
+	<h3 class="font-weight-light" style="text-align:center">Contact Information</h3>
+	<div class="row">
+		<div class="col" style="margin-top:30px">
+			<h5 class="font-weight-light" style="text-align:center">Email: kangyee@comp.nus.edu.sg</h5>
+		</div>
+		<div class="col" style="margin-top:30px">
+			<h5 class="font-weight-light">Book Cover Image credits:</h5>
+			<a href="http://openlibrary.org/">Open Library</a>
+			<div style="height:40px"></div>
+			<h5 class="font-weight-light">Book Review and Rating Information credits:</h5>
+			<a href="https://www.goodreads.com/">Good Reads</a>
+		</div>
+		</div>
+	</div>
+	</div>
+</div>
+{% endblock %}
