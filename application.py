@@ -104,7 +104,7 @@ def book(book_id, user_id):
 		isbn = book.isbn
 	if not session.get("username") is None:
 		res = requests.get("https://www.goodreads.com/book/review_counts.json", 
-		params={"key": "ysbBSxzUW58cfo5kCo7FNw", "isbns": isbn})
+		params={"key": "<input api developer key here>", "isbns": isbn})
 		res = res.json()
 		info = res["books"][0]
 		ave_rating = info["average_rating"]
