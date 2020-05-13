@@ -43,7 +43,7 @@ Feel free to add your own improvements!
 
 (6 rows)
 
-                                Table "public.books"
+Table "public.books"
 |Column |       Type        | Collation | Nullable |              Default              |
 |------|------------------|----------|---------|----------------------------------|
 | id    | integer           |           | not null | nextval('books_id_seq'::regclass) |
@@ -55,7 +55,7 @@ Feel free to add your own improvements!
 Indexes:
     "books_pkey" PRIMARY KEY, btree (id)
 	
-                                 Table "public.reviews"
+Table "public.reviews"
 |  Column  |       Type        | Collation | Nullable |               Default|
 |---------|-------------------|-----------|----------|------------------------------------|
 | id       | integer           |           | not null | nextval('reviews_id_seq'::regclass)|
@@ -68,7 +68,7 @@ Indexes:
 Indexes:
     "reviews_pkey" PRIMARY KEY, btree (id)
 	
-                                  Table "public.users"
+Table "public.users"
  | Column  |       Type        | Collation | Nullable |              Default|
 |---------|-------------------|-----------|----------|----------------------------------|
 | id       | integer           |           | not null | nextval('users_id_seq'::regclass)|
