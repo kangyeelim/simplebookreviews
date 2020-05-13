@@ -104,7 +104,7 @@ def book(book_id, user_id):
 		isbn = book.isbn
 	if not session.get("username") is None:
 		res = requests.get("https://www.goodreads.com/book/review_counts.json", 
-		params={"key": "<input api developer key here>", "isbns": isbn})
+		params={"key": "<input developer key>", "isbns": isbn})
 		res = res.json()
 		info = res["books"][0]
 		ave_rating = info["average_rating"]
@@ -199,8 +199,9 @@ def changepassword(id):
 			
 @app.route('/signout', methods=['POST'])
 def signout():
-    session.pop("username")
-    return redirect(url_for("index"))
+	session.pop("username")
+	session.clear()
+	return redirect(url_for("index"))
 	
 	
 @app.route("/contact/<int:id>")
