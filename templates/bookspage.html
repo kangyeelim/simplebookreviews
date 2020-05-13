@@ -22,26 +22,54 @@
 {% endblock %}
 
 {% block body %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+		  <div class="alert alert-warning alert-dismissible" role="alert">
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+			{{messages[0]}}
+		  </div>
+	{% endif %}
+{% endwith %}
+<h2 class="font-weight-light">Books</h2>
+<div style="height:20px"></div>
 	<div class="row">
 		<div class= "col">
-			<h2 class="font-weight-light">Books</h2>
+			
+			<form class="form-inline my-2 my-lg-0" action="{{ url_for('search', id=user.id) }}" method="post">
+				<input class="form-control form-control-sm" style="width:250px" name="input" type="search" placeholder="Search" aria-label="Search">
+				<div style="width:5px"></div>
+				<button class="btn btn-outline-success btn-sm" type="submit">Search</button>
+			</form>
+			<div style="height:20px"></div>
+			
 		</div>
 		<div class="col">
-			<form class="form-inline my-2 my-lg-0" action="{{ url_for('search', id=user.id) }}" method="post">
-				<input class="form-control mr-sm-2" style="width:300px" name="input" type="search" placeholder="Search" aria-label="Search">
-				<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+			<form class="form-inline my-2 my-lg-0" action="{{ url_for('addbookbyisbn', id=user.id) }}" method="post">
+				<input class="form-control form-control-sm" style="width:250px" name="input" type="search" placeholder="ISBN" aria-label="ISBN">
+				<div style="width:5px"></div>
+				<button class="btn btn-outline-primary btn-sm" type="submit">Add Book</button>
 			</form>
+			
+		</div>
+		<div class="col">
+			<form class="form-inline my-2 my-lg-0" action="{{ url_for('addbookbytitle', id=user.id) }}" method="post">
+				<input class="form-control form-control-sm" style="width:250px" name="input" type="search" placeholder="Title (case-sensitive)" aria-label="Title">
+				<div style="width:5px"></div>
+				<button class="btn btn-outline-primary btn-sm" type="submit">Add Book</button>
+			</form>
+			
 		</div>
 	</div>
 	<div style="height:20px"></div>
-	<ul>{% for book in books %}
-	{% if book.id != 1: %}
-		<li>
-			<a href="{{ url_for('book', book_id=book.id, user_id=user.id) }}">
-				<p>{{ book.title }} by {{ book.author }}</p>
-			</a>
-		</li>
-		{% endif %}
-		{% endfor %}
-    </ul>
+			<ul>{% for book in books %}
+				{% if book.id != 1: %}
+				<li>
+					<a href="{{ url_for('book', book_id=book.id, user_id=user.id) }}">
+						<p>{{ book.title }} by {{ book.author }}</p>
+					</a>
+				</li>
+				{% endif %}
+				{% endfor %}
+			</ul>
 {% endblock %}
+

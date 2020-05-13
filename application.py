@@ -22,6 +22,7 @@ Session(app)
 engine = create_engine(os.getenv("DATABASE_URL"))
 key = os.getenv("GOODREADS_KEY")
 db = scoped_session(sessionmaker(bind=engine))
+google_key = os.getenv("GOOGLE_KEY")
 
 @app.route("/")
 def index():
@@ -97,7 +98,72 @@ def search(id):
 		return render_template("bookspage.html", user=user, books=books)
 	else:
 		return redirect(url_for("index"))
+		
+@app.route("/addbookbyisbn/<int:id>", methods=['POST'])
+def addbookbyisbn(id):
+	if session.get("username") is None:
+		return redirect(url_for("index"))
+	input = request.form.get("input")
+	if len(input) != 10:
+		flash('ISBN is a 10 character input', 'warning')
+		return redirect("/bookspage/" + str(id))
+	res = requests.get("https://www.googleapis.com/books/v1/volumes?q=isbn:" + input + "&key=" + google_key)
+	res = res.json()
+	
+	if db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": input}).rowcount != 0:
+		flash('The book is already in the library archive. Do a search to find it.', 'warning')
+		return redirect("/bookspage/" + str(id)) #change to something proper
+	try:
+		for book in res["items"]:
+			author = book["volumeInfo"]["authors"][0]
+			isbn = input
+			title = book["volumeInfo"]["title"]
+			year = book["volumeInfo"]["publishedDate"]
+			db.execute("INSERT INTO books (isbn, title, author, year) VALUES (:isbn, :title, :author, :year)", 
+			{"isbn": isbn, "title": title, "author": author, "year":year})
+			db.commit()
+		flash('Successfully added into library archive!')
+		return redirect("/bookspage/" + str(id)) #change to something proper
+	except KeyError:
+		flash('Unable to add this book.')
+		return redirect("/bookspage/" + str(id))
+	except Error:
+		flash('Oops something went wrong!')
+		return redirect("/bookspage/" + str(id))
 
+@app.route("/addbookbytitle/<int:id>", methods=['POST'])
+def addbookbytitle(id):
+	if session.get("username") is None:
+		return redirect(url_for("index"))
+	input = request.form.get("input")
+	if db.execute("SELECT * FROM books WHERE title = :title", {"title": input}).rowcount != 0:
+		flash('The book is already in the library archive. Do a search to find it.', 'warning')
+		return redirect("/bookspage/" + str(id)) #change to something proper
+	res = requests.get("https://www.googleapis.com/books/v1/volumes?q=intitle:" + input + "&key=" + google_key)
+	res = res.json()
+	try:
+		book = res["items"][0]
+		isbn = book["volumeInfo"]["industryIdentifiers"][1]["identifier"]
+		if db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).rowcount != 0:
+			flash('The book is already in the library archive. Do a search to find it.', 'warning')
+			return redirect("/bookspage/" + str(id)) #change to something proper	
+		book = res["items"][0]
+		author = book["volumeInfo"]["authors"][0]
+		isbn = book["volumeInfo"]["industryIdentifiers"][1]["identifier"]
+		title = book["volumeInfo"]["title"]
+		year = book["volumeInfo"]["publishedDate"][0:4]
+		db.execute("INSERT INTO books (isbn, title, author, year) VALUES (:isbn, :title, :author, :year)", 
+		{"isbn": isbn, "title": title, "author": author, "year":year})
+		db.commit()
+		flash('Successfully added into library archive!')
+		return redirect("/bookspage/" + str(id))
+	except KeyError:
+		flash('Unable to add this book. Check if book already in the library.')
+		return redirect("/bookspage/" + str(id))
+	except Error:
+		flash('Oops something went wrong!')
+		return redirect("/bookspage/" + str(id))
+		
 @app.route("/book/<int:book_id>/<int:user_id>")
 def book(book_id, user_id):
 	if db.execute("SELECT * FROM books WHERE id = :id", {"id": book_id}).rowcount == 1:

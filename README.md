@@ -27,6 +27,7 @@ $ pip install -r requirements.txt
 $ export FLASK_APP = application.py # flask run
 $ export DATABASE_URL = Heroku Postgres DB URI 
 $ export GOODREADS_KEY = Goodreads API Key. # More info: https://www.goodreads.com/api
+$ export GOOGLE_KEY = Google Books API Key # More info: https://developers.google.com/books/docs/v1/using#WorkingVolumes
 
 #To run application
 $ flask run
@@ -34,7 +35,7 @@ $ flask run
 #Go to the ip address on browser (http://127.0.0.1:5000/)
 
 #To import books.csv file into DB
-$py import.py 
+$ py import.py 
 ```
 
 ### DB Schema
