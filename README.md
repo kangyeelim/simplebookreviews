@@ -10,7 +10,7 @@
 
 ```bash
 # Clone repo
-$ git clone https://github.com/marcorichetta/cs50-project1.git
+$ git clone this repository
 
 $ cd simplebookreviews
 
@@ -21,6 +21,11 @@ $ pip install -r requirements.txt
 $ export FLASK_APP = application.py # flask run
 $ export DATABASE_URL = Heroku Postgres DB URI
 $ export GOODREADS_KEY = Goodreads API Key. # More info: https://www.goodreads.com/api
+
+#To run application
+$ flask run
+
+#Go to the ip address on browser (http://127.0.0.1:5000/)
 ```
 
 ### DB Schema
