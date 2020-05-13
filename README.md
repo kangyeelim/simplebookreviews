@@ -32,6 +32,9 @@ $ export GOODREADS_KEY = Goodreads API Key. # More info: https://www.goodreads.c
 $ flask run
 
 #Go to the ip address on browser (http://127.0.0.1:5000/)
+
+#To import books.csv file into DB
+$py import.py 
 ```
 
 ### DB Schema
