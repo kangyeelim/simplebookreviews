@@ -20,6 +20,7 @@ Session(app)
 
 # Set up database
 engine = create_engine(os.getenv("DATABASE_URL"))
+key = os.getenv("GOODREADS_KEY")
 db = scoped_session(sessionmaker(bind=engine))
 
 @app.route("/")
@@ -104,7 +105,7 @@ def book(book_id, user_id):
 		isbn = book.isbn
 	if not session.get("username") is None:
 		res = requests.get("https://www.goodreads.com/book/review_counts.json", 
-		params={"key": "<input developer key>", "isbns": isbn})
+		params={"key": key, "isbns": isbn})
 		res = res.json()
 		info = res["books"][0]
 		ave_rating = info["average_rating"]
