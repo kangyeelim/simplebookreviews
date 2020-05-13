@@ -1,4 +1,8 @@
 # simplebookreviews
+
+## Try it out
+https://simplebookreview.herokuapp.com/
+
 ## Usage
 
 * Register an account
