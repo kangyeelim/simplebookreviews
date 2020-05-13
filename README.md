@@ -1,7 +1,9 @@
-# simplebookreviews
+# simplebookreviews-flask python web app
 
 ## Try it out
 https://simplebookreview.herokuapp.com/
+Passwords are not yet hashed! Do not leave sensitive information in
+review submissions or anywhere.
 
 ## Usage
 
@@ -23,7 +25,7 @@ $ pip install -r requirements.txt
 
 # ENV Variables
 $ export FLASK_APP = application.py # flask run
-$ export DATABASE_URL = Heroku Postgres DB URI
+$ export DATABASE_URL = Heroku Postgres DB URI 
 $ export GOODREADS_KEY = Goodreads API Key. # More info: https://www.goodreads.com/api
 
 #To run application
