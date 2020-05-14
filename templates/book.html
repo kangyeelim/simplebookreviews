@@ -87,7 +87,8 @@
 			<div class="card-body">
 				<h4 class="font-weight-light">Rating: {{ review.rating }} out of 5</h4>
 				<h4 class="font-weight-light">Review: {{ review.review }}</h4>
-				<p class="font-weight-light">By: {{ review.username }}</p>
+				<h6 class="font-weight-light">By: {{ review.username }}</h6>
+				<h6 class="font-weight-light">{{ review.datetime.strftime('%Y-%m-%d %H:%M:%S') }} UTC</h6>
 			</div>
 		</div>
 	{% endfor %}

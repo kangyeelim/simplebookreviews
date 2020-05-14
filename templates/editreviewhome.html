@@ -1,0 +1,71 @@
+{% extends 'layout2.html' %}
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+{% block title %}
+	<li class="nav-item active">
+		<a class="nav-link" href="#">Home
+			<span class="sr-only">(current)</span>
+		</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" href="{{ url_for('allbooks', id=user.id) }}">All Books</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" href="{{ url_for('contact', id=user.id) }}">Contact</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" href="{{ url_for('account', id=user.id) }}">Account</a>
+	</li>
+{% endblock %}
+
+{% block heading %}
+	<h1 class="font-weight-light" style="color:white">Welcome, {{ user.username }}!</h1>
+	<p class="lead" style="color:white">Here are all your book reviews.</p>
+{% endblock %}
+
+{% block body %}
+	<div class="container">
+	<div class="card border-0 shadow my-5">
+	<div class="card-body">
+	<form action="{{ url_for('updatereview', book_id= review.book_id, user_id=user.id) }}" method="post">
+		<div class="form-group">
+			<h5 class="font-weight-light">Review</h5>
+			<textarea class="form-control" type="text" name="inputReview" rows="4" >{{ review.review }}</textarea>
+		</div>
+		<div class="form-group">
+			<h5 class="font-weight-light">Rating out of 5:</h5>
+			<select class="form-control" name="rating">
+				<option>1</option>
+				
+				<option>2</option>
+				
+				<option>3</option>
+				
+				<option>4</option>
+				
+				<option>5</option>
+			</select>
+		</div>
+		<button class="btn btn-lg btn-secondary btn-block btn-login text-uppercase mb-2" type="submit">Submit.</button>
+	</form>
+	</div>
+	</div>
+	<h3 class="font-weight-light" style="text-align:center">My Reviews and Ratings from Simple Book Reviews</h3>
+	{% for review in reviews %}
+		<div class="card border-0 shadow my-5">
+			<div class="card-body">
+				<a id="book_title" class="font-weight-light" href="{{ url_for('book', user_id=user.id, book_id=review.book_id) }}">{{ book_titles[loop.index - 1][0] }}<a>
+				<div style="height:5px"></div>
+				<h4 class="font-weight-light">Rating: {{ review.rating }} out of 5</h4>
+				<h4 class="font-weight-light">Review: {{ review.review }}</h4>
+				<h6 class="font-weight-light">{{ review.datetime.strftime('%Y-%m-%d %H:%M:%S') }}</h6>
+				<div class="box">
+					<a class="fa fa-edit fa-lg" style="user-select: auto;" href="{{ url_for('editreview', id=user.id, review_id=review.id) }}"></a>
+					<div style="width:20px"></div>
+					<a class="fa fa-trash-alt fa-lg" style="user-select: auto;" href="{{ url_for('deletereview', id=user.id, review_id=review.id) }}"></a>
+				</div>
+			</div>
+		</div>
+		
+	{% endfor %}
+	</div>
+{% endblock %}

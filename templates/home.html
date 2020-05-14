@@ -22,14 +22,35 @@
 {% endblock %}
 
 {% block body %}
+	{% with messages = get_flashed_messages() %}
+	{% if messages %}
+		  <div class="alert alert-warning alert-dismissible" role="alert">
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+			{{messages[0]}}
+		  </div>
+	{% endif %}
+	{% endwith %}
 	<div class="container">
-	<h3 class="font-weight-light" style="text-align:center">Reviews and Ratings from Simple Book Reviews</h3>
+	<h3 class="font-weight-light" style="text-align:center">My Reviews and Ratings from Simple Book Reviews</h3>
 	{% for review in reviews %}
 		<div class="card border-0 shadow my-5">
 			<div class="card-body">
 				<a id="book_title" class="font-weight-light" href="{{ url_for('book', user_id=user.id, book_id=review.book_id) }}">{{ book_titles[loop.index - 1][0] }}<a>
+				<div style="height:5px"></div>
 				<h4 class="font-weight-light">Rating: {{ review.rating }} out of 5</h4>
 				<h4 class="font-weight-light">Review: {{ review.review }}</h4>
+				<h6 class="font-weight-light">{{ review.datetime.strftime('%Y-%m-%d %H:%M:%S') }} UTC</h6>
+			
+				<div class="container">
+				<div class="row justify-content-end">
+				<div class="col-auto">
+					<a class="fa fa-edit fa-lg" href="{{ url_for('editreview', id=user.id, review_id=review.id) }}" style="user-select: auto;"></a>
+				</div>
+				<div class="col-auto">
+					<a class="fa fa-trash fa-lg" href="{{ url_for('deletereview', id=user.id, review_id=review.id) }}" style="user-select: auto;"></a>
+				</div>
+				</div>
+				</div>
 			</div>
 		</div>
 	{% endfor %}

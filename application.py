@@ -57,9 +57,12 @@ def signin():
 def signup():
 	name = request.form.get("inputUsername")
 	password = request.form.get("inputPassword")
+	password2 = request.form.get("inputPassword2")
 	# Make sure username does not exist.
 	if db.execute("SELECT * FROM users WHERE username = :username", {"username": name}).rowcount != 0:
 		return render_template("invalidUsername.html", username= name, password= password) #done
+	if password != password2:
+		return render_template("signuppwmismatch.html", username= name)
 	
 	if db.execute("SELECT * FROM users WHERE username = :username", {"username": name}).rowcount == 0:
 		db.execute("INSERT INTO users (username, password) VALUES (:username, :password)", 
@@ -112,23 +115,24 @@ def addbookbyisbn(id):
 	
 	if db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": input}).rowcount != 0:
 		flash('The book is already in the library archive. Do a search to find it.', 'warning')
-		return redirect("/bookspage/" + str(id)) #change to something proper
+		return redirect("/bookspage/" + str(id))
+	
 	try:
-		for book in res["items"]:
-			author = book["volumeInfo"]["authors"][0]
-			isbn = input
-			title = book["volumeInfo"]["title"]
-			year = book["volumeInfo"]["publishedDate"]
-			db.execute("INSERT INTO books (isbn, title, author, year) VALUES (:isbn, :title, :author, :year)", 
-			{"isbn": isbn, "title": title, "author": author, "year":year})
-			db.commit()
+		book = res["items"][0]
+		author = book["volumeInfo"]["authors"][0]
+		isbn = input
+		title = book["volumeInfo"]["title"]
+		year = book["volumeInfo"]["publishedDate"]
+		db.execute("INSERT INTO books (isbn, title, author, year) VALUES (:isbn, :title, :author, :year)", 
+		{"isbn": isbn, "title": title, "author": author, "year":year})
+		db.commit()
 		flash('Successfully added into library archive!')
-		return redirect("/bookspage/" + str(id)) #change to something proper
+		return redirect("/bookspage/" + str(id)) 
 	except KeyError:
 		flash('Unable to add this book.')
 		return redirect("/bookspage/" + str(id))
-	except Error:
-		flash('Oops something went wrong!')
+	except:
+		flash('Oops something went wrong! Unable to add book.')
 		return redirect("/bookspage/" + str(id))
 
 @app.route("/addbookbytitle/<int:id>", methods=['POST'])
@@ -136,33 +140,36 @@ def addbookbytitle(id):
 	if session.get("username") is None:
 		return redirect(url_for("index"))
 	input = request.form.get("input")
-	if db.execute("SELECT * FROM books WHERE title = :title", {"title": input}).rowcount != 0:
-		flash('The book is already in the library archive. Do a search to find it.', 'warning')
-		return redirect("/bookspage/" + str(id)) #change to something proper
 	res = requests.get("https://www.googleapis.com/books/v1/volumes?q=intitle:" + input + "&key=" + google_key)
 	res = res.json()
-	try:
-		book = res["items"][0]
-		isbn = book["volumeInfo"]["industryIdentifiers"][1]["identifier"]
-		if db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).rowcount != 0:
-			flash('The book is already in the library archive. Do a search to find it.', 'warning')
-			return redirect("/bookspage/" + str(id)) #change to something proper	
-		book = res["items"][0]
-		author = book["volumeInfo"]["authors"][0]
-		isbn = book["volumeInfo"]["industryIdentifiers"][1]["identifier"]
-		title = book["volumeInfo"]["title"]
-		year = book["volumeInfo"]["publishedDate"][0:4]
-		db.execute("INSERT INTO books (isbn, title, author, year) VALUES (:isbn, :title, :author, :year)", 
-		{"isbn": isbn, "title": title, "author": author, "year":year})
-		db.commit()
-		flash('Successfully added into library archive!')
-		return redirect("/bookspage/" + str(id))
-	except KeyError:
-		flash('Unable to add this book. Check if book already in the library.')
-		return redirect("/bookspage/" + str(id))
-	except Error:
-		flash('Oops something went wrong!')
-		return redirect("/bookspage/" + str(id))
+	count = 0
+	for book in res["items"]:
+		try:
+			isbn = book["volumeInfo"]["industryIdentifiers"][1]["identifier"]
+			if len(isbn) != 10:
+				continue
+			if db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).rowcount != 0:
+				continue	
+			author = book["volumeInfo"]["authors"][0]
+			title = book["volumeInfo"]["title"]
+			year = book["volumeInfo"]["publishedDate"][0:4]
+			db.execute("INSERT INTO books (isbn, title, author, year) VALUES (:isbn, :title, :author, :year)", 
+			{"isbn": isbn, "title": title, "author": author, "year":year})
+			db.commit()
+			count = count + 1
+		except KeyError:
+			continue
+		except:
+			flash('Oops something went wrong! Unable to add all possible books with input title.')
+			return redirect("/bookspage/" + str(id))
+		
+	if count == 0:
+		flash('Unable to add book into library archive!')
+	elif count == 1:
+		flash('Successfully added book into library archive!')
+	else:
+		flash('Successfully added ' + str(count) +' possible matching books into library archive!')
+	return redirect("/bookspage/" + str(id))
 		
 @app.route("/book/<int:book_id>/<int:user_id>")
 def book(book_id, user_id):
@@ -170,16 +177,20 @@ def book(book_id, user_id):
 		book = db.execute("SELECT * FROM books WHERE id = :id", {"id": book_id}).fetchone()
 		isbn = book.isbn
 	if not session.get("username") is None:
-		res = requests.get("https://www.goodreads.com/book/review_counts.json", 
-		params={"key": key, "isbns": isbn})
-		res = res.json()
-		info = res["books"][0]
-		ave_rating = info["average_rating"]
-		work_ratings_count = info["work_ratings_count"]
-		work_reviews_count = info["work_reviews_count"]
-		reviews = db.execute("SELECT * FROM reviews WHERE user_id = :user_id AND book_id = :book_id", {"user_id": user_id, "book_id": book_id})
-		return render_template("book.html", book= book, ave_rating= ave_rating,
-		ratings_count=work_ratings_count, reviews_count= work_reviews_count, user_id= user_id, reviews= reviews)
+		try:
+			res = requests.get("https://www.goodreads.com/book/review_counts.json", 
+			params={"key": key, "isbns": isbn})
+			res = res.json()
+			info = res["books"][0]
+			ave_rating = info["average_rating"]
+			work_ratings_count = info["work_ratings_count"]
+			work_reviews_count = info["work_reviews_count"]
+			reviews = db.execute("SELECT * FROM reviews WHERE user_id = :user_id AND book_id = :book_id", {"user_id": user_id, "book_id": book_id})
+			return render_template("book.html", book= book, ave_rating= ave_rating,
+			ratings_count=work_ratings_count, reviews_count= work_reviews_count, user_id= user_id, reviews= reviews)
+		except:
+			flash('Unable to show information on this book from GoodReads.')
+			return redirect('/bookspage/' + str(user_id))
 	else:
 		return redirect(url_for("index"))
 
@@ -193,13 +204,54 @@ def submitreview(book_id, user_id):
 		review = request.form.get("inputReview")
 		rating = request.form.get("rating")
 		username = db.execute("SELECT username FROM users WHERE id = :id", {"id": user_id}).fetchone()
-		db.execute("INSERT INTO reviews (review, username, user_id, rating, book_id) VALUES (:review, :username, :user_id, :rating, :book_id)", 
+		db.execute("INSERT INTO reviews (review, username, user_id, rating, book_id, datetime) VALUES (:review, :username, :user_id, :rating, :book_id, now())", 
 		{"review": review, "username": username[0], "user_id": user_id, "rating": rating, "book_id": book_id})
 		db.commit()
+		flash('Added review to this book.')
 		return redirect("/book/" + str(book_id) + "/" + str(user_id))
 	else:
 		return redirect(url_for("index"))
+
+@app.route("/editreview/<int:id>/<int:review_id>")
+def editreview(id, review_id):
+	if db.execute("SELECT * FROM users WHERE id = :id", {"id": id}).rowcount == 1:
+		user = db.execute("SELECT * FROM users WHERE id = :id", {"id": id}).fetchone()
+	if not session.get("username") is None:
+		reviews = db.execute("SELECT * FROM reviews WHERE username = :username", {"username": user.username}).fetchall()
+		book_titles = db.execute("SELECT title FROM books, reviews WHERE books.id = book_id").fetchall()
+		review = db.execute("SELECT * FROM reviews WHERE id = :id", {"id": review_id}).fetchone()
+		return render_template("editreviewhome.html", user= user, reviews=reviews, book_titles=book_titles, review=review)
+	else:
+		return redirect(url_for("index"))
+		
+@app.route("/updatereview/<int:user_id>/<int:book_id>", methods=['POST'])
+def updatereview(user_id, book_id):
+	review = request.form.get("inputReview")
+	rating = request.form.get("rating")
+	if db.execute("SELECT * FROM reviews WHERE user_id = :user_id AND book_id = :book_id", 
+	{"user_id": user_id, "book_id":book_id}).rowcount == 1:
+		user = db.execute("SELECT * FROM users WHERE id = :id", {"id": user_id}).fetchone()
+		db.execute("UPDATE reviews SET review =:review, rating =:rating WHERE book_id = :book_id AND user_id = :user_id",
+		{"review": review, "rating":rating, "book_id":book_id, "user_id":user_id})
+		db.commit()
+		book = db.execute("SELECT * FROM books WHERE id = :id", {"id":book_id}).fetchone()
+		flash('Successfully edited review for ' + book.title + ' by ' + book.author)
+		return redirect("/home/" + str(user_id))
+	return redirect("/home/" + str(user_id))
 	
+@app.route("/deletereview/<int:id>/<int:review_id>")
+def deletereview(id, review_id):
+	if session.get("username") is None:
+		return redirect(url_for("index"))
+	if db.execute("SELECT * FROM reviews WHERE id = :id", {"id": review_id}).rowcount == 1:
+		review = db.execute("SELECT * FROM reviews WHERE id = :id", {"id": review_id}).fetchone()
+		book_id = review.book_id
+		book = db.execute("SELECT * FROM books WHERE id = :id", {"id":book_id}).fetchone()
+		db.execute("DELETE FROM reviews WHERE id = :id", {"id":review_id})
+		db.commit()
+		flash('Deleted review for ' + book.title + ' by ' + book.author)
+		return redirect("/home/" + str(id))
+	return redirect("/home/" + str(user_id))
 	
 @app.route("/account/<int:id>")
 def account(id):
