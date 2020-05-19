@@ -1,4 +1,7 @@
 # simplebookreviews-flask python web app
+simplebookreviews is a web application that allows you to keep track of books you've read and provide reviews, ratings and information on books.
+
+### https://courses.edx.org/courses/course-v1:HarvardX+CS50W+Web/course/
 
 ![](static/images/login.png)
 
